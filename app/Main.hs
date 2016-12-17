@@ -10,6 +10,7 @@ import           Token
 
 main :: IO ()
 main = do
+  putStrLn "Enter the expression and hit Ctrl-D"
   str <- getContents
   case runLexer str >>= runParser >>= runKleisli (Kleisli runEval &&& Kleisli runPrint) of
     Left err -> putStrLn $ "Error: " ++ err

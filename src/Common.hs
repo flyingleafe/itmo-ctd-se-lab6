@@ -5,8 +5,11 @@ module Common
        , pop
        , push
        , append
+       , (&&&&)
        ) where
 
+
+import           Control.Arrow        (Kleisli (..), (&&&))
 import           Control.Monad.Except (MonadError, throwError)
 import           Control.Monad.State  (MonadState, gets, modify)
 import           Control.Monad.Writer (MonadWriter (..))
@@ -26,3 +29,7 @@ push = modify . (:)
 
 append :: MonadWriter (DList a) m => a -> m ()
 append = tell . singleton
+
+infixr 6 &&&&
+(&&&&) :: Monad m => (a -> m b) -> (a -> m c) -> a -> m (b, c)
+f &&&& g = runKleisli $ Kleisli f &&& Kleisli g

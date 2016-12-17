@@ -1,10 +1,6 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-
 module Token
        ( ArithToken (..)
-       , TokenVisitor (..)
        , charToToken
-       , runVisitor
        ) where
 
 data ArithToken = LeftP
@@ -33,9 +29,3 @@ charToToken '-' = Just Minus
 charToToken '*' = Just Mul
 charToToken '/' = Just Div
 charToToken _   = Nothing
-
-class Monad m => TokenVisitor m where
-  visit :: ArithToken -> m ()
-
-runVisitor :: TokenVisitor m => [ArithToken] -> m ()
-runVisitor toks = mapM_ visit toks

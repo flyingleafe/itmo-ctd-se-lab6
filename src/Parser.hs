@@ -2,27 +2,27 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 
 module Parser
-       ( runParser
+       ( Parser
        ) where
 
 import           Control.Monad.Except (throwError)
 import           Control.Monad.Loops  (whileM_)
-import           Control.Monad.State  (MonadState (..), StateT (..), gets, modify)
+import           Control.Monad.State  (MonadState (..), StateT (..), gets, modify, evalStateT)
 import           Control.Monad.Writer (MonadWriter (..), WriterT (..), execWriterT)
 import           Data.DList           (DList, toList)
 
 import           Common
 import           Token
-
-import           Debug.Trace
+import           Visitor
 
 type Parser = StateT [ArithToken] (WriterT (DList ArithToken) (Either String))
 
-runParser :: [ArithToken] -> Either String [ArithToken]
-runParser toks = fmap toList $ execWriterT $ runStateT (runVisitor toks >> finishParse) []
-
 instance TokenVisitor Parser where
+  type Result Parser = [ArithToken]
+
   visit = processToken
+  finish = get >>= mapM_ append
+  result = fmap toList . execWriterT . flip evalStateT []
 
 processToken :: ArithToken -> Parser ()
 processToken n@(Num _) = append n
@@ -47,6 +47,3 @@ priority _     = 2
 
 morePriority :: ArithToken -> ArithToken -> Bool
 morePriority a b = priority a >= priority b
-
-finishParse :: Parser ()
-finishParse = get >>= mapM_ append

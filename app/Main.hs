@@ -1,18 +1,24 @@
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies     #-}
+
 module Main where
 
-import           Control.Arrow (Kleisli (..), (&&&))
-
+import           Common
 import           Eval
 import           Lexer
 import           Parser
 import           Print
 import           Token
+import           Visitor
 
 main :: IO ()
 main = do
   putStrLn "Enter the expression and hit Ctrl-D"
   str <- getContents
-  case runLexer str >>= runParser >>= runKleisli (Kleisli runEval &&& Kleisli runPrint) of
+  let eres = runLexer str >>=
+             runVisitor @Parser >>=
+             (runVisitor @Eval) &&&& (runVisitor @Print)
+  case eres of
     Left err -> putStrLn $ "Error: " ++ err
     Right (res, expr) -> do
       putStrLn $ "Expression in RPN: " ++ expr

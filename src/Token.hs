@@ -14,7 +14,16 @@ data ArithToken = LeftP
                 | Mul
                 | Div
                 | Num Int
-                deriving (Show, Eq)
+                deriving Eq
+
+instance Show ArithToken where
+  show LeftP   = "("
+  show RightP  = ")"
+  show Plus    = "+"
+  show Minus   = "-"
+  show Mul     = "*"
+  show Div     = "/"
+  show (Num n) = show n
 
 charToToken :: Char -> Maybe ArithToken
 charToToken '(' = Just LeftP

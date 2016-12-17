@@ -46,4 +46,4 @@ priority Div   = 1
 priority _     = 2
 
 morePriority :: ArithToken -> ArithToken -> Bool
-morePriority a b = priority a >= priority b
+morePriority a b = priority a <= priority b

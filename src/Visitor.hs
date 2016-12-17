@@ -15,5 +15,5 @@ class Monad m => TokenVisitor m where
   finish :: m ()
   result :: m a -> Either String (Result m)
 
-runVisitor :: forall m. (TokenVisitor m, Show (Result m)) => [ArithToken] -> Either String (Result m)
+runVisitor :: forall m. TokenVisitor m => [ArithToken] -> Either String (Result m)
 runVisitor toks = result $ mapM_ visit toks >> finish @m
